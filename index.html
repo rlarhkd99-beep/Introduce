@@ -1914,18 +1914,21 @@
                     if (parties.length === 0) {
                         parties = [...EMBEDDED_DATA.parties];
                         partyCounter = EMBEDDED_DATA.partyCounter;
+                        saveData(); // 기본 데이터 저장
                     }
                 } catch (error) {
                     console.error('로컬 스토리지 데이터 파싱 오류:', error);
                     parties = [...EMBEDDED_DATA.parties];
                     partyCounter = EMBEDDED_DATA.partyCounter;
+                    saveData(); // 기본 데이터 저장
                 }
             } else {
                 parties = [...EMBEDDED_DATA.parties];
                 partyCounter = EMBEDDED_DATA.partyCounter;
+                saveData(); // 기본 데이터 저장
             }
             
-            filteredParties = [];
+            filteredParties = null;
             loadHeaderData();
             loadSortState();
             loadFilterState();
@@ -1937,30 +1940,45 @@
             const saved = localStorage.getItem('maplePartyHeaderData');
             
             if (saved) {
-                const headerValues = JSON.parse(saved);
-                const headerCells = document.querySelectorAll('#tableHeader div.header-input');
-                headerValues.forEach((value, index) => {
-                    if (headerCells[index]) {
-                        headerCells[index].textContent = value;
-                    }
-                });
+                try {
+                    const headerValues = JSON.parse(saved);
+                    const headerCells = document.querySelectorAll('#tableHeader div.header-input');
+                    headerValues.forEach((value, index) => {
+                        if (headerCells[index]) {
+                            headerCells[index].textContent = value;
+                        }
+                    });
+                } catch (error) {
+                    console.error('헤더 데이터 파싱 오류:', error);
+                    loadDefaultHeaders();
+                }
             } else {
-                const defaultHeaders = EMBEDDED_DATA.headerData;
-                const headerCells = document.querySelectorAll('#tableHeader div.header-input');
-                defaultHeaders.forEach((value, index) => {
-                    if (headerCells[index]) {
-                        headerCells[index].textContent = value;
-                    }
-                });
-                localStorage.setItem('maplePartyHeaderData', JSON.stringify(defaultHeaders));
+                loadDefaultHeaders();
             }
+        }
+
+        // 기본 헤더 로드
+        function loadDefaultHeaders() {
+            const defaultHeaders = EMBEDDED_DATA.headerData;
+            const headerCells = document.querySelectorAll('#tableHeader div.header-input');
+            defaultHeaders.forEach((value, index) => {
+                if (headerCells[index]) {
+                    headerCells[index].textContent = value;
+                }
+            });
+            localStorage.setItem('maplePartyHeaderData', JSON.stringify(defaultHeaders));
         }
 
         // 정렬 상태 로드
         function loadSortState() {
             const saved = localStorage.getItem('maplePartySortState');
             if (saved) {
-                currentSort = JSON.parse(saved);
+                try {
+                    currentSort = JSON.parse(saved);
+                } catch (error) {
+                    console.error('정렬 상태 파싱 오류:', error);
+                    currentSort = { column: null, direction: 'asc' };
+                }
             }
         }
 
@@ -1968,24 +1986,31 @@
         function loadFilterState() {
             const saved = localStorage.getItem('maplePartyFilterState');
             if (saved) {
-                const filterState = JSON.parse(saved);
-                currentPlayer = filterState.currentPlayer || '';
-                currentBoss = filterState.currentBoss || '';
-                
-                const playerFilterInput = document.getElementById('playerFilterInput');
-                if (playerFilterInput) {
-                    playerFilterInput.value = currentPlayer;
-                }
-                
-                const bossFilterInput = document.getElementById('bossFilterInput');
-                if (bossFilterInput) {
-                    bossFilterInput.value = currentBoss;
-                }
-                
-                // 필터 상태 복원
-                if (filterState.hasFilter) {
-                    applyFilters();
-                } else {
+                try {
+                    const filterState = JSON.parse(saved);
+                    currentPlayer = filterState.currentPlayer || '';
+                    currentBoss = filterState.currentBoss || '';
+                    
+                    const playerFilterInput = document.getElementById('playerFilterInput');
+                    if (playerFilterInput) {
+                        playerFilterInput.value = currentPlayer;
+                    }
+                    
+                    const bossFilterInput = document.getElementById('bossFilterInput');
+                    if (bossFilterInput) {
+                        bossFilterInput.value = currentBoss;
+                    }
+                    
+                    // 필터 상태 복원
+                    if (filterState.hasFilter) {
+                        applyFilters();
+                    } else {
+                        filteredParties = null;
+                    }
+                } catch (error) {
+                    console.error('필터 상태 파싱 오류:', error);
+                    currentPlayer = '';
+                    currentBoss = '';
                     filteredParties = null;
                 }
             }
@@ -2003,6 +2028,7 @@
                 auctionPrice: 0
             };
             parties.push(party);
+            saveData(); // 데이터 저장
             renderTable();
         }
 
@@ -2043,6 +2069,7 @@
             if (confirm(`선택된 ${selectedCheckboxes.length}개의 파티를 삭제하시겠습니까?`)) {
                 const selectedIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.dataset.partyId));
                 parties = parties.filter(party => !selectedIds.includes(party.id));
+                saveData(); // 데이터 저장
                 renderTable();
                 alert(`${selectedIds.length}개의 파티가 삭제되었습니다.`);
             }
@@ -2120,6 +2147,7 @@
                     }
                 }
                 
+                saveData(); // 데이터 저장
                 renderTable();
             }
         }
@@ -2140,6 +2168,7 @@
                     }
                 }
                 
+                saveData(); // 데이터 저장
                 renderTable();
             }
         }
@@ -2269,6 +2298,7 @@
                 // 콤마 제거 후 숫자만 추출
                 const cleanValue = value.replace(/,/g, '');
                 party.auctionPrice = parseInt(cleanValue) || 0;
+                saveData(); // 데이터 저장
                 renderTable();
             }
         }
@@ -2622,6 +2652,7 @@
                 parties.forEach(party => {
                     party.day = '';
                 });
+                saveData(); // 데이터 저장
                 renderTable();
                 alert('모든 파티의 요일이 삭제되었습니다.');
             }
@@ -2633,6 +2664,7 @@
                 parties.forEach(party => {
                     party.time = '';
                 });
+                saveData(); // 데이터 저장
                 renderTable();
                 alert('모든 파티의 시간이 삭제되었습니다.');
             }
@@ -2644,6 +2676,7 @@
                 parties.forEach(party => {
                     party.cleared = false;
                 });
+                saveData(); // 데이터 저장
                 renderTable();
                 alert('모든 파티의 클리어 상태가 해제되었습니다.');
             }
@@ -2655,6 +2688,7 @@
                 parties.forEach(party => {
                     party.auctionPrice = 0;
                 });
+                saveData(); // 데이터 저장
                 renderTable();
                 alert('모든 파티의 경매장 판매가가 삭제되었습니다.');
             }
