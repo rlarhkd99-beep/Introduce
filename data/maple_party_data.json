@@ -300,9 +300,25 @@
       "time": "",
       "cleared": false,
       "auctionPrice": 11111
+    },
+    {
+      "id": 22,
+      "characters": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "boss": "",
+      "day": "",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
     }
   ],
-  "partyCounter": 22,
+  "partyCounter": 23,
   "headerData": [
     "창호",
     "광민",
@@ -320,5 +336,5 @@
     "currentBoss": "",
     "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T08:14:17.337Z"
+  "lastUpdated": "2025-09-04T08:14:20.575Z"
 }
