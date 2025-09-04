@@ -2697,7 +2697,19 @@
             const dataToSave = {
                 parties: sortedParties,
                 partyCounter: partyCounter,
-                headerData: getHeaderData(),
+                headerData: (() => {
+                    try {
+                        const headerValues = [];
+                        const headerCells = document.querySelectorAll('#tableHeader div.header-input');
+                        headerCells.forEach(cell => {
+                            headerValues.push(cell.textContent.trim());
+                        });
+                        return headerValues;
+                    } catch (error) {
+                        console.error('헤더 데이터 가져오기 오류:', error);
+                        return [];
+                    }
+                })(),
                 sortState: currentSort,
                 filterState: {
                     currentPlayer: currentPlayer,
