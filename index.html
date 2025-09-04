@@ -465,6 +465,9 @@
             <button class="btn btn-danger" onclick="clearAllParties()">
                 🗑️ 모든 파티 삭제
             </button>
+            <button class="btn btn-danger" onclick="clearAllLocalData(); location.reload();" style="background: #ff6b35;">
+                🔄 데이터 초기화
+            </button>
         </div>
 
         <div class="filter-section">
@@ -1907,61 +1910,24 @@
         function loadData() {
             console.log('loadData 시작');
             
-            // 먼저 로컬 스토리지에서 데이터 확인
-            const saved = localStorage.getItem('maplePartyBossData');
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    if (data.parties && data.parties.length > 0) {
-                        console.log('loadData - 로컬 스토리지에서 로드:', data.parties.length, '개');
-                        parties = data.parties;
-                    partyCounter = data.partyCounter || 1;
-                    
-                        // 헤더 데이터 복원
-                        if (data.headerData) {
-                            const headerCells = document.querySelectorAll('#tableHeader div.header-input');
-                            data.headerData.forEach((value, index) => {
-                                if (headerCells[index]) {
-                                    headerCells[index].textContent = value;
-                                }
-                            });
-                        }
-                        
-                        // 정렬 상태 복원
-                        if (data.sortState) {
-                            currentSort = data.sortState;
-                        }
-                        
-                        // 필터 상태 복원
-                        if (data.filterState) {
-                            currentPlayer = data.filterState.currentPlayer || '';
-                            currentBoss = data.filterState.currentBoss || '';
-                            
-                            const playerFilterInput = document.getElementById('playerFilterInput');
-                            const bossFilterInput = document.getElementById('bossFilterInput');
-                            
-                            if (playerFilterInput) playerFilterInput.value = currentPlayer;
-                            if (bossFilterInput) bossFilterInput.value = currentBoss;
-                            
-                            if (data.filterState.filteredParties) {
-                                filteredParties = parties.filter(p => data.filterState.filteredParties.includes(p.id));
-                            }
-                        }
-                        
-                        console.log('loadData - 로컬 데이터 로드 완료:', parties.length, '개');
-                        renderTable();
-                        return;
-                    }
-                } catch (error) {
-                    console.error('로컬 스토리지 데이터 파싱 오류:', error);
-                }
-            }
-            
-            // 로컬 데이터가 없으면 EMBEDDED_DATA 사용
+            // 항상 EMBEDDED_DATA를 우선 사용 (로컬 스토리지 무시)
             if (window.EMBEDDED_DATA && window.EMBEDDED_DATA.parties) {
-                console.log('loadData - 로컬 데이터 없어 EMBEDDED_DATA 사용:', window.EMBEDDED_DATA.parties.length, '개');
+                console.log('loadData - EMBEDDED_DATA 사용:', window.EMBEDDED_DATA.parties.length, '개');
                 parties = [...window.EMBEDDED_DATA.parties];
                 partyCounter = window.EMBEDDED_DATA.partyCounter;
+                
+                // 헤더 데이터 복원
+                if (window.EMBEDDED_DATA.headerData) {
+                    const headerCells = document.querySelectorAll('#tableHeader div.header-input');
+                    window.EMBEDDED_DATA.headerData.forEach((value, index) => {
+                        if (headerCells[index]) {
+                            headerCells[index].textContent = value;
+                        }
+                    });
+                }
+                
+                console.log('loadData - EMBEDDED_DATA 로드 완료:', parties.length, '개');
+                console.log('loadData - 첫 번째 파티:', parties[0]);
                 
                 // 기본 데이터 저장
                 saveData();
@@ -2822,6 +2788,15 @@
             localStorage.setItem('maplePartyFilterState', JSON.stringify(filterState));
         }
 
+        // 로컬 스토리지 완전 초기화
+        function clearAllLocalData() {
+            localStorage.removeItem('maplePartyBossData');
+            localStorage.removeItem('maplePartyHeaderData');
+            localStorage.removeItem('maplePartySortState');
+            localStorage.removeItem('maplePartyFilterState');
+            console.log('로컬 스토리지 완전 초기화 완료');
+        }
+
         // 모든 데이터 저장
             async function saveAllData() {
             saveData();
@@ -3137,7 +3112,7 @@
                     const jsonString = JSON.stringify(shareData, null, 2);
                     const encodedContent = btoa(unescape(encodeURIComponent(jsonString)));
                     
-                    // 기존 파일 정보 가져오기
+                    // 기존 파일 정보 가져오기 (409 Conflict 방지)
                     let sha = null;
                     try {
                         const getResponse = await fetch(`https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${githubConfig.filePath}`, {
@@ -3150,9 +3125,14 @@
                         if (getResponse.ok) {
                             const fileData = await getResponse.json();
                             sha = fileData.sha;
+                            console.log('기존 파일 sha 가져오기 성공:', sha);
+                        } else if (getResponse.status === 404) {
+                            console.log('기존 파일이 없습니다. 새로 생성합니다.');
+                        } else {
+                            throw new Error(`파일 정보 가져오기 실패: ${getResponse.status}`);
                         }
                     } catch (error) {
-                        console.log('기존 파일이 없습니다. 새로 생성합니다.');
+                        console.log('파일 정보 가져오기 오류, 새로 생성합니다:', error);
                     }
                     
                     // 파일 업데이트/생성
@@ -3166,7 +3146,7 @@
                         body: JSON.stringify({
                             message: `메이플 파티보스 데이터 업데이트 - ${new Date().toLocaleString()}`,
                             content: encodedContent,
-                            sha: sha
+                            sha: sha // null이면 새 파일 생성, 있으면 업데이트
                         })
                     });
                     
@@ -3174,6 +3154,8 @@
                         console.log('GitHub에 데이터가 성공적으로 저장되었습니다.');
                         return true;
                     } else {
+                        const errorText = await updateResponse.text();
+                        console.error('GitHub 저장 실패:', updateResponse.status, errorText);
                         throw new Error(`HTTP ${updateResponse.status}: ${updateResponse.statusText}`);
                     }
                 } catch (error) {
