@@ -1888,34 +1888,76 @@
                 }
             });
 
-            // 데이터 로드
-            function loadData() {
-                console.log('loadData 시작');
-                
-                // EMBEDDED_DATA에서 19개 파티 데이터 사용
-                if (window.EMBEDDED_DATA && window.EMBEDDED_DATA.parties) {
-                    // 전역 변수에 명시적으로 할당
-                    window.parties = [...window.EMBEDDED_DATA.parties];
-                    window.partyCounter = window.EMBEDDED_DATA.partyCounter;
-                    
-                    // 기존 변수에도 할당
-                    parties = window.parties;
-                    partyCounter = window.partyCounter;
-                    
-                    console.log('loadData - EMBEDDED_DATA에서 로드:', parties.length, '개');
-                    console.log('loadData - 첫 번째 파티:', parties[0]);
-                    console.log('loadData - parties 배열 전체:', parties);
-                } else {
-                    console.error('EMBEDDED_DATA가 정의되지 않았습니다.');
-                    return;
+                    // 데이터 로드
+        function loadData() {
+            console.log('loadData 시작');
+            
+            // 먼저 로컬 스토리지에서 데이터 확인
+            const saved = localStorage.getItem('maplePartyBossData');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if (data.parties && data.parties.length > 0) {
+                        console.log('loadData - 로컬 스토리지에서 로드:', data.parties.length, '개');
+                        parties = data.parties;
+                        partyCounter = data.partyCounter || 1;
+                        
+                        // 헤더 데이터 복원
+                        if (data.headerData) {
+                            const headerCells = document.querySelectorAll('#tableHeader div.header-input');
+                            data.headerData.forEach((value, index) => {
+                                if (headerCells[index]) {
+                                    headerCells[index].textContent = value;
+                                }
+                            });
+                        }
+                        
+                        // 정렬 상태 복원
+                        if (data.sortState) {
+                            currentSort = data.sortState;
+                        }
+                        
+                        // 필터 상태 복원
+                        if (data.filterState) {
+                            currentPlayer = data.filterState.currentPlayer || '';
+                            currentBoss = data.filterState.currentBoss || '';
+                            
+                            const playerFilterInput = document.getElementById('playerFilterInput');
+                            const bossFilterInput = document.getElementById('bossFilterInput');
+                            
+                            if (playerFilterInput) playerFilterInput.value = currentPlayer;
+                            if (bossFilterInput) bossFilterInput.value = currentBoss;
+                            
+                            if (data.filterState.filteredParties) {
+                                filteredParties = parties.filter(p => data.filterState.filteredParties.includes(p.id));
+                            }
+                        }
+                        
+                        console.log('loadData - 로컬 데이터 로드 완료:', parties.length, '개');
+                        renderTable();
+                        return;
+                    }
+                } catch (error) {
+                    console.error('로컬 스토리지 데이터 파싱 오류:', error);
                 }
-                
-                // 데이터 저장
-                saveData();
-                
-                // 테이블 렌더링
-                renderTable();
             }
+            
+            // 로컬 데이터가 없으면 EMBEDDED_DATA 사용
+            if (window.EMBEDDED_DATA && window.EMBEDDED_DATA.parties) {
+                console.log('loadData - 로컬 데이터 없어 EMBEDDED_DATA 사용:', window.EMBEDDED_DATA.parties.length, '개');
+                parties = [...window.EMBEDDED_DATA.parties];
+                partyCounter = window.EMBEDDED_DATA.partyCounter;
+                
+                // 기본 데이터 저장
+                saveData();
+            } else {
+                console.error('EMBEDDED_DATA가 정의되지 않았습니다.');
+                return;
+            }
+            
+            // 테이블 렌더링
+            renderTable();
+        }
             
             // 공유 데이터 로드
             function loadSharedData(data) {
