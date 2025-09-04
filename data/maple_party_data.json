@@ -5,10 +5,10 @@
       "characters": [
         "보마",
         "에반",
-        "t실험",
-        "t실험",
-        "t실험",
-        "t실험"
+        "",
+        "",
+        "",
+        ""
       ],
       "boss": "이지 카링",
       "time": "",
@@ -100,39 +100,37 @@
         "",
         ""
       ],
-      "boss": "하드 세렌",
+      "boss": "이지 대적자",
       "time": "",
       "cleared": false,
-      "auctionPrice": 0,
-      "day": "금"
+      "auctionPrice": 0
     },
     {
       "id": 8,
       "characters": [
+        "은월",
         "",
-        "불독",
         "",
-        "윈브",
         "",
-        ""
+        "",
+        "아델"
       ],
-      "boss": "이지 칼로스",
+      "boss": "이지 카링",
       "time": "",
       "cleared": false,
-      "auctionPrice": 0,
-      "day": "금"
+      "auctionPrice": 0
     },
     {
       "id": 9,
       "characters": [
-        "아란",
         "",
-        "신궁",
+        "불독",
         "",
-        "비숍",
+        "",
+        "아델",
         ""
       ],
-      "boss": "하드 세렌",
+      "boss": "이지 대적자",
       "time": "",
       "cleared": false,
       "auctionPrice": 0
@@ -140,12 +138,12 @@
     {
       "id": 10,
       "characters": [
-        "아란",
-        "",
-        "신궁",
+        "은월",
         "",
         "",
-        ""
+        "",
+        "",
+        "아델"
       ],
       "boss": "이지 대적자",
       "time": "",
@@ -155,14 +153,14 @@
     {
       "id": 11,
       "characters": [
-        "아란",
         "",
-        "신궁",
+        "불독",
         "",
         "",
+        "아델",
         ""
       ],
-      "boss": "이지 칼로스",
+      "boss": "이지 대적자",
       "time": "",
       "cleared": false,
       "auctionPrice": 0
@@ -170,14 +168,14 @@
     {
       "id": 12,
       "characters": [
-        "아란",
+        "은월",
         "",
-        "신궁",
         "",
-        "제로",
-        ""
+        "",
+        "",
+        "아델"
       ],
-      "boss": "이지 카링",
+      "boss": "이지 대적자",
       "time": "",
       "cleared": false,
       "auctionPrice": 0
@@ -185,14 +183,14 @@
     {
       "id": 13,
       "characters": [
-        "썬콜",
         "",
-        "패파",
+        "불독",
         "",
-        "제로",
+        "",
+        "아델",
         ""
       ],
-      "boss": "하드 세렌",
+      "boss": "이지 대적자",
       "time": "",
       "cleared": false,
       "auctionPrice": 0
@@ -200,12 +198,12 @@
     {
       "id": 14,
       "characters": [
-        "썬콜",
+        "은월",
         "",
-        "패파",
         "",
-        "제로",
-        ""
+        "",
+        "",
+        "아델"
       ],
       "boss": "이지 대적자",
       "time": "",
@@ -215,14 +213,14 @@
     {
       "id": 15,
       "characters": [
-        "썬콜",
         "",
-        "패파",
+        "불독",
         "",
-        "제로",
+        "",
+        "아델",
         ""
       ],
-      "boss": "이지 칼로스",
+      "boss": "이지 대적자",
       "time": "",
       "cleared": false,
       "auctionPrice": 0
@@ -230,14 +228,14 @@
     {
       "id": 16,
       "characters": [
-        "불독",
+        "은월",
         "",
         "",
-        "히어로",
         "",
-        ""
+        "",
+        "아델"
       ],
-      "boss": "익스 스우",
+      "boss": "이지 대적자",
       "time": "",
       "cleared": false,
       "auctionPrice": 0
@@ -245,14 +243,14 @@
     {
       "id": 17,
       "characters": [
-        "렌",
+        "",
+        "불독",
         "",
         "",
-        "",
-        "렌",
-        "렌"
+        "아델",
+        ""
       ],
-      "boss": "하드 세렌",
+      "boss": "이지 대적자",
       "time": "",
       "cleared": false,
       "auctionPrice": 0
@@ -260,12 +258,12 @@
     {
       "id": 18,
       "characters": [
-        "렌",
+        "은월",
         "",
         "",
         "",
-        "렌",
-        ""
+        "",
+        "아델"
       ],
       "boss": "이지 대적자",
       "time": "",
@@ -275,20 +273,36 @@
     {
       "id": 19,
       "characters": [
-        "렌",
+        "",
+        "불독",
         "",
         "",
-        "",
-        "렌",
-        "렌"
+        "아델",
+        ""
       ],
-      "boss": "이지 칼로스",
+      "boss": "이지 대적자",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 20,
+      "characters": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "boss": "",
+      "day": "",
       "time": "",
       "cleared": false,
       "auctionPrice": 0
     }
   ],
-  "partyCounter": 20,
+  "partyCounter": 21,
   "headerData": [
     "창호",
     "광민",
@@ -306,5 +320,5 @@
     "currentBoss": "",
     "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T02:14:03.435Z"
+  "lastUpdated": "2025-09-04T06:55:01.790Z"
 }
