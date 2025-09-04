@@ -298,7 +298,7 @@
       "boss": "",
       "time": "",
       "cleared": false,
-      "auctionPrice": 0
+      "auctionPrice": 11111
     }
   ],
   "partyCounter": 21,
@@ -319,5 +319,5 @@
     "currentBoss": "",
     "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T08:06:09.252Z"
+  "lastUpdated": "2025-09-04T08:06:16.010Z"
 }
