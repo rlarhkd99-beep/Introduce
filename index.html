@@ -1889,8 +1889,25 @@
         });
 
         // 데이터 로드
-        async function loadData() {
-            await loadFromGitHubOrLocal();
+        function loadData() {
+            console.log('loadData 시작');
+            
+            // EMBEDDED_DATA에서 19개 파티 데이터 사용
+            if (window.EMBEDDED_DATA && window.EMBEDDED_DATA.parties) {
+                parties = [...window.EMBEDDED_DATA.parties];
+                partyCounter = window.EMBEDDED_DATA.partyCounter;
+                
+                console.log('loadData - EMBEDDED_DATA에서 로드:', parties.length, '개');
+                console.log('loadData - 첫 번째 파티:', parties[0]);
+            } else {
+                console.error('EMBEDDED_DATA가 정의되지 않았습니다.');
+                return;
+            }
+            
+            // 데이터 저장
+            saveData();
+            
+            // 테이블 렌더링
             renderTable();
         }
         
