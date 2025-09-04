@@ -5,7 +5,7 @@
       "characters": [
         "보마",
         "에반",
-        "",
+        "sss",
         "",
         "",
         ""
@@ -288,17 +288,17 @@
     {
       "id": 20,
       "characters": [
-        "aaa",
+        "",
         "",
         "",
         "",
         "",
         ""
       ],
-      "boss": "sss",
+      "boss": "",
       "time": "",
       "cleared": false,
-      "auctionPrice": 1111
+      "auctionPrice": 0
     }
   ],
   "partyCounter": 21,
@@ -319,5 +319,5 @@
     "currentBoss": "",
     "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T07:59:46.850Z"
+  "lastUpdated": "2025-09-04T08:06:09.252Z"
 }
