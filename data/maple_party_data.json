@@ -13,7 +13,7 @@
       "boss": "이지 카링",
       "time": "",
       "cleared": false,
-      "auctionPrice": 0
+      "auctionPrice": 11111
     },
     {
       "id": 2,
@@ -304,5 +304,5 @@
     "currentBoss": "",
     "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T07:47:35.989Z"
+  "lastUpdated": "2025-09-04T07:47:37.752Z"
 }
