@@ -1968,7 +1968,6 @@
             // 공유된 데이터 로드 알림
             setTimeout(() => {
                 alert('🔗 공유된 데이터를 성공적으로 로드했습니다!\n\n이제 다른 사용자와 같은 데이터를 공유하고 있습니다.');
-                updateShareStatus(true);
             }, 500);
         }
         
@@ -1983,7 +1982,6 @@
                 const success = await loadDataFromGitHub();
                 if (success) {
                     console.log('GitHub API에서 데이터를 성공적으로 로드했습니다.');
-                    updateShareStatus(true);
                     return;
                 }
             }
@@ -1991,7 +1989,6 @@
             // GitHub API 실패 시 로컬 데이터 사용
             console.log('GitHub API를 사용할 수 없어 로컬 데이터를 사용합니다.');
             loadFromLocalStorage();
-            updateShareStatus(false);
         }
         
         // 로컬 스토리지에서 데이터 로드
@@ -2025,7 +2022,6 @@
             loadHeaderData();
             loadSortState();
             loadFilterState();
-            updateShareStatus(false);
         }
 
         // 헤더 데이터 로드
