@@ -295,7 +295,7 @@
         "",
         ""
       ],
-      "boss": "",
+      "boss": "aaa",
       "time": "",
       "cleared": false,
       "auctionPrice": 33333
@@ -319,5 +319,5 @@
     "currentBoss": "",
     "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T08:08:52.117Z"
+  "lastUpdated": "2025-09-04T08:08:55.706Z"
 }
