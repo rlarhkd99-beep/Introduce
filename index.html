@@ -443,6 +443,7 @@
         <div class="header">
             <h1>🎮 메이플 파티보스 관리</h1>
             <p>파티 관리 &amp; 분배금 계산</p>
+            <div id="githubStatus" style="margin-top: 5px; font-size: 12px; opacity: 0.8;"></div>
         </div>
 
         <div class="controls">
@@ -451,6 +452,9 @@
             </button>
             <button class="btn btn-primary" onclick="saveAllData()">
                 💾 저장
+            </button>
+            <button class="btn btn-primary" onclick="setupGitHubAPI()">
+                ⚙️ GitHub API 설정
             </button>
             <button class="btn btn-primary" onclick="saveAsFile()">
                 📁 파일로 저장
@@ -1541,6 +1545,15 @@
         let currentPlayer = '';
         let currentBoss = '';
         let filteredParties = null; // null = 필터 없음, 배열 = 필터 적용됨
+        
+        // GitHub API 설정
+        let githubConfig = {
+            token: '',
+            owner: 'rlarhkd99-beep',
+            repo: 'Maple',
+            filePath: 'data/maple_party_data.json',
+            enabled: false
+        };
 
         // 보스별 색상 매핑
         const bossColors = {
@@ -1904,6 +1917,85 @@
 
         // 데이터 로드
         function loadData() {
+            loadFromGitHubOrLocal();
+            renderTable();
+        }
+        
+        // 공유 데이터 로드
+        function loadSharedData(data) {
+            parties = data.parties || [];
+            partyCounter = data.partyCounter || 1;
+            
+            // 공유된 데이터를 로컬에도 저장
+            saveData();
+            
+            // 헤더 데이터도 복원
+            if (data.headerData) {
+                const headerCells = document.querySelectorAll('#tableHeader div.header-input');
+                data.headerData.forEach((value, index) => {
+                    if (headerCells[index]) {
+                        headerCells[index].textContent = value;
+                    }
+                });
+                saveHeaderData();
+            }
+            
+            // 정렬 상태 복원
+            if (data.sortState) {
+                currentSort = data.sortState;
+                saveSortState();
+            }
+            
+            // 필터 상태 복원
+            if (data.filterState) {
+                currentPlayer = data.filterState.currentPlayer || '';
+                currentBoss = data.filterState.currentBoss || '';
+                
+                const playerFilterInput = document.getElementById('playerFilterInput');
+                const bossFilterInput = document.getElementById('bossFilterInput');
+                
+                if (playerFilterInput) playerFilterInput.value = currentPlayer;
+                if (bossFilterInput) bossFilterInput.value = currentBoss;
+                
+                if (data.filterState.filteredParties) {
+                    filteredParties = parties.filter(p => data.filterState.filteredParties.includes(p.id));
+                }
+                saveFilterState();
+            }
+            
+            console.log('공유된 데이터를 성공적으로 로드했습니다.');
+            
+            // 공유된 데이터 로드 알림
+            setTimeout(() => {
+                alert('🔗 공유된 데이터를 성공적으로 로드했습니다!\n\n이제 다른 사용자와 같은 데이터를 공유하고 있습니다.');
+                updateShareStatus(true);
+            }, 500);
+        }
+        
+        // GitHub 또는 로컬에서 데이터 로드
+        async function loadFromGitHubOrLocal() {
+            // GitHub API 설정 로드
+            loadGitHubConfig();
+            updateGitHubStatus();
+            
+            // GitHub API를 통한 데이터 로드 시도
+            if (githubConfig.enabled && githubConfig.token) {
+                const success = await loadDataFromGitHub();
+                if (success) {
+                    console.log('GitHub API에서 데이터를 성공적으로 로드했습니다.');
+                    updateShareStatus(true);
+                    return;
+                }
+            }
+            
+            // GitHub API 실패 시 로컬 데이터 사용
+            console.log('GitHub API를 사용할 수 없어 로컬 데이터를 사용합니다.');
+            loadFromLocalStorage();
+            updateShareStatus(false);
+        }
+        
+        // 로컬 스토리지에서 데이터 로드
+        function loadFromLocalStorage() {
             const saved = localStorage.getItem('maplePartyBossData');
             
             if (saved) {
@@ -1933,7 +2025,7 @@
             loadHeaderData();
             loadSortState();
             loadFilterState();
-            renderTable();
+            updateShareStatus(false);
         }
 
         // 헤더 데이터 로드
@@ -2638,13 +2730,342 @@
         }
 
         // 모든 데이터 저장
-        function saveAllData() {
+        async function saveAllData() {
             saveData();
             saveHeaderData();
             saveSortState();
             saveFilterState();
             renderTable(); // 저장 후 테이블 다시 렌더링
-            alert('모든 데이터가 저장되었습니다!');
+            
+            // GitHub API를 통한 저장 시도
+            if (githubConfig.enabled && githubConfig.token) {
+                try {
+                    const success = await saveDataToGitHub();
+                    if (success) {
+                        alert('✅ 모든 데이터가 저장되었습니다!\n\n🔗 GitHub와 동기화되었습니다.\n\n다른 사용자들이 새로고침하면 최신 데이터를 볼 수 있습니다.');
+                        return;
+                    }
+                } catch (error) {
+                    console.error('GitHub 저장 실패:', error);
+                    alert('⚠️ GitHub 저장에 실패했습니다.\n\n로컬에만 저장되었습니다.');
+                }
+            }
+            
+            // GitHub API가 비활성화된 경우
+            alert('✅ 모든 데이터가 로컬에 저장되었습니다!');
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        // GitHub API 설정
+        function setupGitHubAPI() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 30px;
+                    border-radius: 15px;
+                    max-width: 600px;
+                    width: 90%;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                ">
+                    <h3 style="margin-bottom: 20px; color: #4CAF50;">⚙️ GitHub API 설정</h3>
+                    <div style="margin-bottom: 20px; padding: 15px; background: #e8f5e8; border-radius: 8px; border-left: 4px solid #4CAF50;">
+                        <p style="margin: 0; font-weight: bold; color: #2e7d32;">📋 설정 방법:</p>
+                        <ol style="margin: 10px 0 0 20px; color: #2e7d32; font-size: 14px;">
+                            <li>GitHub → Settings → Developer settings → Personal access tokens</li>
+                            <li>Generate new token (classic) 클릭</li>
+                            <li>repo 권한 체크 후 토큰 생성</li>
+                            <li>생성된 토큰을 아래에 입력</li>
+                        </ol>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">GitHub Personal Access Token:</label>
+                        <input type="password" id="githubTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" style="
+                            width: 100%;
+                            padding: 10px;
+                            border: 2px solid #4CAF50;
+                            border-radius: 8px;
+                            font-family: monospace;
+                            font-size: 12px;
+                        ">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">저장소 소유자:</label>
+                        <input type="text" id="githubOwnerInput" value="rlarhkd99-beep" readonly style="
+                            width: 100%;
+                            padding: 10px;
+                            border: 2px solid #ddd;
+                            border-radius: 8px;
+                            font-family: monospace;
+                            font-size: 12px;
+                            background-color: #f5f5f5;
+                        ">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">저장소 이름:</label>
+                        <input type="text" id="githubRepoInput" value="Maple" readonly style="
+                            width: 100%;
+                            padding: 10px;
+                            border: 2px solid #ddd;
+                            border-radius: 8px;
+                            font-family: monospace;
+                            font-size: 12px;
+                            background-color: #f5f5f5;
+                        ">
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button onclick="testGitHubConnection()" style="
+                            padding: 10px 20px;
+                            background: #2196F3;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                        ">🔗 연결 테스트</button>
+                        <button onclick="saveGitHubConfig()" style="
+                            padding: 10px 20px;
+                            background: #4CAF50;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                        ">💾 설정 저장</button>
+                        <button onclick="this.closest('.modal').remove()" style="
+                            padding: 10px 20px;
+                            background: #f44336;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                        ">닫기</button>
+                    </div>
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+            
+            // 기존 설정 로드
+            loadGitHubConfig();
+            
+            // 모달 외부 클릭 시 닫기
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+        
+        // GitHub 설정 로드
+        function loadGitHubConfig() {
+            const saved = localStorage.getItem('githubConfig');
+            if (saved) {
+                try {
+                    githubConfig = JSON.parse(saved);
+                    const tokenInput = document.getElementById('githubTokenInput');
+                    if (tokenInput) {
+                        tokenInput.value = githubConfig.token;
+                    }
+                } catch (error) {
+                    console.error('GitHub 설정 로드 오류:', error);
+                }
+            }
+        }
+        
+        // GitHub 설정 저장
+        function saveGitHubConfig() {
+            const tokenInput = document.getElementById('githubTokenInput');
+            const ownerInput = document.getElementById('githubOwnerInput');
+            const repoInput = document.getElementById('githubRepoInput');
+            
+            if (!tokenInput.value.trim()) {
+                alert('GitHub 토큰을 입력해주세요.');
+                return;
+            }
+            
+            githubConfig.token = tokenInput.value.trim();
+            githubConfig.owner = ownerInput.value.trim();
+            githubConfig.repo = repoInput.value.trim();
+            githubConfig.enabled = true;
+            
+            localStorage.setItem('githubConfig', JSON.stringify(githubConfig));
+            
+            document.querySelector('.modal').remove();
+            updateGitHubStatus();
+            
+            alert('✅ GitHub API 설정이 저장되었습니다!\n\n이제 데이터를 GitHub와 동기화할 수 있습니다.');
+        }
+        
+        // GitHub 연결 테스트
+        async function testGitHubConnection() {
+            const tokenInput = document.getElementById('githubTokenInput');
+            const ownerInput = document.getElementById('githubOwnerInput');
+            const repoInput = document.getElementById('githubRepoInput');
+            
+            if (!tokenInput.value.trim()) {
+                alert('GitHub 토큰을 입력해주세요.');
+                return;
+            }
+            
+            const testConfig = {
+                token: tokenInput.value.trim(),
+                owner: ownerInput.value.trim(),
+                repo: repoInput.value.trim()
+            };
+            
+            try {
+                const response = await fetch(`https://api.github.com/repos/${testConfig.owner}/${testConfig.repo}`, {
+                    headers: {
+                        'Authorization': `token ${testConfig.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.ok) {
+                    alert('✅ GitHub 연결 성공!\n\n저장소에 접근할 수 있습니다.');
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                alert(`❌ GitHub 연결 실패!\n\n오류: ${error.message}\n\n토큰과 저장소 정보를 확인해주세요.`);
+                console.error('GitHub 연결 오류:', error);
+            }
+        }
+        
+        // GitHub 상태 업데이트
+        function updateGitHubStatus() {
+            const githubStatus = document.getElementById('githubStatus');
+            if (githubStatus) {
+                if (githubConfig.enabled && githubConfig.token) {
+                    githubStatus.innerHTML = '🔗 <strong>GitHub 동기화 활성화</strong> - 데이터가 GitHub와 동기화됩니다.';
+                    githubStatus.style.color = '#4CAF50';
+                } else {
+                    githubStatus.innerHTML = '💾 <strong>로컬 모드</strong> - GitHub API를 설정하면 데이터를 공유할 수 있습니다.';
+                    githubStatus.style.color = '#FF9800';
+                }
+            }
+        }
+        
+        // GitHub에서 데이터 로드
+        async function loadDataFromGitHub() {
+            if (!githubConfig.enabled || !githubConfig.token) {
+                return false;
+            }
+            
+            try {
+                const response = await fetch(`https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${githubConfig.filePath}`, {
+                    headers: {
+                        'Authorization': `token ${githubConfig.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const fileData = await response.json();
+                    const jsonData = JSON.parse(atob(fileData.content));
+                    loadSharedData(jsonData);
+                    return true;
+                } else if (response.status === 404) {
+                    console.log('GitHub에 데이터 파일이 없습니다. 로컬 데이터를 사용합니다.');
+                    return false;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                console.error('GitHub 데이터 로드 오류:', error);
+                return false;
+            }
+        }
+        
+        // GitHub에 데이터 저장
+        async function saveDataToGitHub() {
+            if (!githubConfig.enabled || !githubConfig.token) {
+                return false;
+            }
+            
+            try {
+                const currentHeaderData = getHeaderPlayerNames();
+                
+                const shareData = {
+                    parties: parties,
+                    partyCounter: partyCounter,
+                    headerData: currentHeaderData,
+                    sortState: currentSort,
+                    filterState: {
+                        currentPlayer: currentPlayer,
+                        currentBoss: currentBoss,
+                        filteredParties: filteredParties ? filteredParties.map(p => p.id) : null
+                    },
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                const jsonString = JSON.stringify(shareData, null, 2);
+                const encodedContent = btoa(unescape(encodeURIComponent(jsonString)));
+                
+                // 기존 파일 정보 가져오기
+                let sha = null;
+                try {
+                    const getResponse = await fetch(`https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${githubConfig.filePath}`, {
+                        headers: {
+                            'Authorization': `token ${githubConfig.token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    
+                    if (getResponse.ok) {
+                        const fileData = await getResponse.json();
+                        sha = fileData.sha;
+                    }
+                } catch (error) {
+                    console.log('기존 파일이 없습니다. 새로 생성합니다.');
+                }
+                
+                // 파일 업데이트/생성
+                const updateResponse = await fetch(`https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${githubConfig.filePath}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${githubConfig.token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `메이플 파티보스 데이터 업데이트 - ${new Date().toLocaleString()}`,
+                        content: encodedContent,
+                        sha: sha
+                    })
+                });
+                
+                if (updateResponse.ok) {
+                    console.log('GitHub에 데이터가 성공적으로 저장되었습니다.');
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${updateResponse.status}: ${updateResponse.statusText}`);
+                }
+            } catch (error) {
+                console.error('GitHub 데이터 저장 오류:', error);
+                return false;
+            }
         }
 
         // 요일 일괄 삭제
@@ -2706,7 +3127,8 @@
                 sortState: currentSort,
                 filterState: {
                     currentPlayer: currentPlayer,
-                    filteredParties: filteredParties.map(p => p.id)
+                    currentBoss: currentBoss,
+                    filteredParties: filteredParties ? filteredParties.map(p => p.id) : null
                 }
             };
             
@@ -2722,7 +3144,8 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            alert('현재 데이터가 포함된 HTML 파일이 저장되었습니다!\n\n이 파일을 다른 사람에게 공유하면 같은 데이터가 표시됩니다.');
+            const shareUrl = generateShareUrl();
+            alert(`현재 데이터가 포함된 HTML 파일이 저장되었습니다!\n\n공유 URL: ${shareUrl}\n\n이 URL을 다른 사람들과 공유하면 같은 데이터를 볼 수 있습니다.`);
         }
 
         // HTML 생성
