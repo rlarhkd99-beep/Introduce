@@ -2976,6 +2976,11 @@
                 if (response.ok) {
                     const fileData = await response.json();
                     const jsonData = JSON.parse(atob(fileData.content));
+                    
+                    console.log('GitHub에서 로드된 데이터:', jsonData);
+                    console.log('GitHub 데이터의 parties:', jsonData.parties);
+                    console.log('GitHub 데이터의 parties 길이:', jsonData.parties ? jsonData.parties.length : 'undefined');
+                    
                     loadSharedData(jsonData);
                     return true;
                 } else if (response.status === 404) {
