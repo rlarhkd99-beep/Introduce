@@ -1974,19 +1974,19 @@
                     partyCounter = data.partyCounter || 1;
                     
                     if (parties.length === 0) {
-                        parties = [...EMBEDDED_DATA.parties];
-                        partyCounter = EMBEDDED_DATA.partyCounter;
+                        parties = [...window.EMBEDDED_DATA.parties];
+                        partyCounter = window.EMBEDDED_DATA.partyCounter;
                         saveData(); // 기본 데이터 저장
                     }
                 } catch (error) {
                     console.error('로컬 스토리지 데이터 파싱 오류:', error);
-                    parties = [...EMBEDDED_DATA.parties];
-                    partyCounter = EMBEDDED_DATA.partyCounter;
+                    parties = [...window.EMBEDDED_DATA.parties];
+                    partyCounter = window.EMBEDDED_DATA.partyCounter;
                     saveData(); // 기본 데이터 저장
                 }
             } else {
-                parties = [...EMBEDDED_DATA.parties];
-                partyCounter = EMBEDDED_DATA.partyCounter;
+                parties = [...window.EMBEDDED_DATA.parties];
+                partyCounter = window.EMBEDDED_DATA.partyCounter;
                 saveData(); // 기본 데이터 저장
             }
             
@@ -2020,7 +2020,7 @@
 
         // 기본 헤더 로드
         function loadDefaultHeaders() {
-            const defaultHeaders = EMBEDDED_DATA.headerData;
+            const defaultHeaders = window.EMBEDDED_DATA.headerData;
             const headerCells = document.querySelectorAll('#tableHeader div.header-input');
             defaultHeaders.forEach((value, index) => {
                 if (headerCells[index]) {
@@ -2483,6 +2483,10 @@
         function renderTable() {
             const tbody = document.getElementById('partyTableBody');
             tbody.innerHTML = '';
+
+            // 디버깅: parties 배열 상태 확인
+            console.log('renderTable - parties length:', parties.length);
+            console.log('renderTable - parties:', parties);
 
             let partiesToShow = filteredParties !== null ? filteredParties : parties;
             
