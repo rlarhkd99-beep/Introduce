@@ -1963,43 +1963,25 @@
         
         // 로컬 스토리지에서 데이터 로드
         function loadFromLocalStorage() {
-            const saved = localStorage.getItem('maplePartyBossData');
-            
             // EMBEDDED_DATA가 정의되었는지 확인
             if (!window.EMBEDDED_DATA) {
                 console.error('EMBEDDED_DATA가 정의되지 않았습니다.');
                 return;
             }
             
-            if (saved) {
-                try {
-                    const data = JSON.parse(saved);
-                    parties = data.parties || [];
-                    partyCounter = data.partyCounter || 1;
-                    
-                    console.log('loadFromLocalStorage - 로컬 데이터 로드:', parties.length, '개');
-                    
-                    if (parties.length === 0) {
-                        console.log('loadFromLocalStorage - 로컬 데이터가 비어있어 기본 데이터 사용');
-                        parties = [...window.EMBEDDED_DATA.parties];
-                        partyCounter = window.EMBEDDED_DATA.partyCounter;
-                        saveData(); // 기본 데이터 저장
-                    }
-                } catch (error) {
-                    console.error('로컬 스토리지 데이터 파싱 오류:', error);
-                    console.log('loadFromLocalStorage - 파싱 오류로 기본 데이터 사용');
-                    parties = [...window.EMBEDDED_DATA.parties];
-                    partyCounter = window.EMBEDDED_DATA.partyCounter;
-                    saveData(); // 기본 데이터 저장
-                }
-            } else {
-                console.log('loadFromLocalStorage - 로컬 데이터 없어 기본 데이터 사용');
-                parties = [...window.EMBEDDED_DATA.parties];
-                partyCounter = window.EMBEDDED_DATA.partyCounter;
-                saveData(); // 기본 데이터 저장
-            }
+            console.log('loadFromLocalStorage - EMBEDDED_DATA 확인:', window.EMBEDDED_DATA);
+            console.log('loadFromLocalStorage - EMBEDDED_DATA.parties:', window.EMBEDDED_DATA.parties);
             
-            console.log('loadFromLocalStorage - 최종 parties:', parties.length, '개');
+            // 강제로 기본 데이터 사용
+            console.log('loadFromLocalStorage - 강제로 기본 데이터 사용');
+            parties = [...window.EMBEDDED_DATA.parties];
+            partyCounter = window.EMBEDDED_DATA.partyCounter;
+            
+            console.log('loadFromLocalStorage - 기본 데이터 로드 완료:', parties.length, '개');
+            console.log('loadFromLocalStorage - 첫 번째 파티:', parties[0]);
+            
+            // 기본 데이터 저장
+            saveData();
             
             filteredParties = null;
             loadHeaderData();
