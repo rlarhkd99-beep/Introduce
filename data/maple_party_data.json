@@ -1,0 +1,339 @@
+{
+  "parties": [
+    {
+      "id": 1,
+      "characters": [
+        "보마",
+        "에반",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "boss": "이지 카링",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 2,
+      "characters": [
+        "보마",
+        "비숍",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "boss": "익스 스우",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 3,
+      "characters": [
+        "",
+        "비숍",
+        "",
+        "히어로",
+        "",
+        ""
+      ],
+      "boss": "이지 카링",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 4,
+      "characters": [
+        "은월",
+        "",
+        "",
+        "히어로",
+        "",
+        ""
+      ],
+      "boss": "하드 세렌",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 5,
+      "characters": [
+        "은월",
+        "불독",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "boss": "이지 대적자",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 6,
+      "characters": [
+        "은월",
+        "",
+        "",
+        "",
+        "아델",
+        ""
+      ],
+      "boss": "이지 카링",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 7,
+      "characters": [
+        "",
+        "불독",
+        "",
+        "윈브",
+        "",
+        ""
+      ],
+      "boss": "하드 세렌",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 8,
+      "characters": [
+        "",
+        "불독",
+        "",
+        "윈브",
+        "",
+        ""
+      ],
+      "boss": "이지 칼로스",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 9,
+      "characters": [
+        "아란",
+        "",
+        "신궁",
+        "",
+        "비숍",
+        ""
+      ],
+      "boss": "하드 세렌",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 10,
+      "characters": [
+        "아란",
+        "",
+        "신궁",
+        "",
+        "",
+        ""
+      ],
+      "boss": "이지 대적자",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 11,
+      "characters": [
+        "아란",
+        "",
+        "신궁",
+        "",
+        "",
+        ""
+      ],
+      "boss": "이지 칼로스",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 12,
+      "characters": [
+        "아란",
+        "",
+        "신궁",
+        "",
+        "제로",
+        ""
+      ],
+      "boss": "이지 카링",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 13,
+      "characters": [
+        "썬콜",
+        "",
+        "패파",
+        "",
+        "제로",
+        ""
+      ],
+      "boss": "하드 세렌",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 14,
+      "characters": [
+        "썬콜",
+        "",
+        "패파",
+        "",
+        "제로",
+        ""
+      ],
+      "boss": "이지 대적자",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 15,
+      "characters": [
+        "썬콜",
+        "",
+        "패파",
+        "",
+        "제로",
+        ""
+      ],
+      "boss": "이지 칼로스",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 16,
+      "characters": [
+        "불독",
+        "",
+        "",
+        "히어로",
+        "",
+        ""
+      ],
+      "boss": "익스 스우",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 17,
+      "characters": [
+        "렌",
+        "",
+        "",
+        "",
+        "렌",
+        "렌"
+      ],
+      "boss": "하드 세렌",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 18,
+      "characters": [
+        "렌",
+        "",
+        "",
+        "",
+        "렌",
+        ""
+      ],
+      "boss": "이지 대적자",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 19,
+      "characters": [
+        "렌",
+        "",
+        "",
+        "",
+        "렌",
+        "렌"
+      ],
+      "boss": "이지 칼로스",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    },
+    {
+      "id": 20,
+      "characters": [
+        "111",
+        "222",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "boss": "aaa",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 44444
+    },
+    {
+      "id": 21,
+      "characters": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "boss": "",
+      "day": "",
+      "time": "",
+      "cleared": false,
+      "auctionPrice": 0
+    }
+  ],
+  "partyCounter": 22,
+  "headerData": [
+    "창호",
+    "광민",
+    "태훈",
+    "은규",
+    "준수",
+    "지훈"
+  ],
+  "sortState": {
+    "column": null,
+    "direction": "asc"
+  },
+  "filterState": {
+    "currentPlayer": "",
+    "currentBoss": "",
+    "filteredParties": null
+  },
+  "lastUpdated": "2025-09-04T08:27:50.793Z"
+}
