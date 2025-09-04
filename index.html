@@ -1546,7 +1546,7 @@
         let currentBoss = '';
         let filteredParties = null; // null = 필터 없음, 배열 = 필터 적용됨
         
-        // GitHub API 설정
+        // GitHub API 설정 (일시적으로 비활성화)
         let githubConfig = {
             token: '',
             owner: 'rlarhkd99-beep',
@@ -2983,6 +2983,13 @@
                     console.log('GitHub에서 로드된 데이터:', jsonData);
                     console.log('GitHub 데이터의 parties:', jsonData.parties);
                     console.log('GitHub 데이터의 parties 길이:', jsonData.parties ? jsonData.parties.length : 'undefined');
+                    
+                    // 첫 번째 파티의 상세 내용 확인
+                    if (jsonData.parties && jsonData.parties.length > 0) {
+                        console.log('첫 번째 파티 상세 내용:', jsonData.parties[0]);
+                        console.log('첫 번째 파티의 보스:', jsonData.parties[0].boss);
+                        console.log('첫 번째 파티의 캐릭터들:', jsonData.parties[0].characters);
+                    }
                     
                     // 인코딩 문제가 있는 경우 기본 데이터 사용
                     if (!jsonData.parties || jsonData.parties.length === 0) {
