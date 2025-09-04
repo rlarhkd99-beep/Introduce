@@ -1876,6 +1876,7 @@
                 ]
             };
             
+            // EMBEDDED_DATA 정의 후 데이터 로드
             loadData();
         });
 
@@ -1888,8 +1889,8 @@
         });
 
         // 데이터 로드
-        function loadData() {
-            loadFromGitHubOrLocal();
+        async function loadData() {
+            await loadFromGitHubOrLocal();
             renderTable();
         }
         
@@ -1966,6 +1967,12 @@
         // 로컬 스토리지에서 데이터 로드
         function loadFromLocalStorage() {
             const saved = localStorage.getItem('maplePartyBossData');
+            
+            // EMBEDDED_DATA가 정의되었는지 확인
+            if (!window.EMBEDDED_DATA) {
+                console.error('EMBEDDED_DATA가 정의되지 않았습니다.');
+                return;
+            }
             
             if (saved) {
                 try {
