@@ -2975,11 +2975,20 @@
                 
                 if (response.ok) {
                     const fileData = await response.json();
-                    const jsonData = JSON.parse(atob(fileData.content));
+                    
+                    // Base64 디코딩 시 인코딩 문제 해결
+                    const decodedContent = atob(fileData.content);
+                    const jsonData = JSON.parse(decodedContent);
                     
                     console.log('GitHub에서 로드된 데이터:', jsonData);
                     console.log('GitHub 데이터의 parties:', jsonData.parties);
                     console.log('GitHub 데이터의 parties 길이:', jsonData.parties ? jsonData.parties.length : 'undefined');
+                    
+                    // 인코딩 문제가 있는 경우 기본 데이터 사용
+                    if (!jsonData.parties || jsonData.parties.length === 0) {
+                        console.log('GitHub 데이터에 문제가 있어 기본 데이터를 사용합니다.');
+                        return false;
+                    }
                     
                     loadSharedData(jsonData);
                     return true;
