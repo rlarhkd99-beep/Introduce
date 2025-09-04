@@ -5,7 +5,7 @@
       "characters": [
         "보마",
         "에반",
-        "",
+        "aaa",
         "",
         "",
         ""
@@ -320,5 +320,5 @@
     "currentBoss": "",
     "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T08:14:09.135Z"
+  "lastUpdated": "2025-09-04T08:14:11.872Z"
 }
