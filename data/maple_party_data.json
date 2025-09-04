@@ -283,41 +283,25 @@
       "boss": "이지 칼로스",
       "time": "",
       "cleared": false,
-      "auctionPrice": 222222
+      "auctionPrice": 0
     },
     {
       "id": 20,
       "characters": [
-        "111",
-        "2",
+        "",
+        "",
         "",
         "",
         "",
         ""
       ],
-      "boss": "ttt",
+      "boss": "111",
       "time": "",
       "cleared": false,
-      "auctionPrice": 333333
-    },
-    {
-      "id": 21,
-      "characters": [
-        "",
-        "",
-        "1",
-        "2",
-        "1",
-        ""
-      ],
-      "boss": "aaaa",
-      "day": "",
-      "time": "",
-      "cleared": false,
-      "auctionPrice": 11111111
+      "auctionPrice": 0
     }
   ],
-  "partyCounter": 22,
+  "partyCounter": 21,
   "headerData": [
     "창호",
     "광민",
@@ -335,5 +319,5 @@
     "currentBoss": "",
     "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T08:20:47.231Z"
+  "lastUpdated": "2025-09-04T08:24:40.787Z"
 }
