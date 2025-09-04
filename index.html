@@ -1956,17 +1956,8 @@
             loadGitHubConfig();
             updateGitHubStatus();
             
-            // GitHub API를 통한 데이터 로드 시도
-            if (githubConfig.enabled && githubConfig.token) {
-                const success = await loadDataFromGitHub();
-                if (success) {
-                    console.log('GitHub API에서 데이터를 성공적으로 로드했습니다.');
-                    return;
-                }
-            }
-            
-            // GitHub API 실패 시 로컬 데이터 사용
-            console.log('GitHub API를 사용할 수 없어 로컬 데이터를 사용합니다.');
+            // 일시적으로 GitHub API 비활성화하고 로컬 데이터 사용
+            console.log('GitHub API를 일시적으로 비활성화하고 로컬 데이터를 사용합니다.');
             loadFromLocalStorage();
         }
         
