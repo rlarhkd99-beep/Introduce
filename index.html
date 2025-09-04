@@ -1922,9 +1922,9 @@
             console.log('loadSharedData - 받은 데이터:', data);
             console.log('loadSharedData - data.parties:', data.parties);
             
-            parties = data.parties || [];
-            partyCounter = data.partyCounter || 1;
-            
+                    parties = data.parties || [];
+                    partyCounter = data.partyCounter || 1;
+                    
             console.log('loadSharedData - parties 설정 후:', parties);
             console.log('loadSharedData - parties.length:', parties.length);
             
@@ -1986,7 +1986,7 @@
                 if (success) {
                     console.log('GitHub에서 데이터 로드 성공');
                     return;
-                } else {
+            } else {
                     console.log('GitHub에서 데이터 로드 실패, 로컬 데이터 사용');
                 }
             }
@@ -2697,7 +2697,7 @@
             const dataToSave = {
                 parties: sortedParties,
                 partyCounter: partyCounter,
-                headerData: headerNames,
+                headerData: getHeaderData(),
                 sortState: currentSort,
                 filterState: {
                     currentPlayer: currentPlayer,
@@ -2719,13 +2719,19 @@
             }
         }
 
-        // 헤더 데이터 저장
-        function saveHeaderData() {
+        // 헤더 데이터 가져오기
+        function getHeaderData() {
             const headerValues = [];
             const headerCells = document.querySelectorAll('#tableHeader div.header-input');
             headerCells.forEach(cell => {
                 headerValues.push(cell.textContent.trim());
             });
+            return headerValues;
+        }
+
+        // 헤더 데이터 저장
+        function saveHeaderData() {
+            const headerValues = getHeaderData();
             localStorage.setItem('maplePartyHeaderData', JSON.stringify(headerValues));
         }
 
