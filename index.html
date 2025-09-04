@@ -1894,11 +1894,17 @@
             
             // EMBEDDED_DATA에서 19개 파티 데이터 사용
             if (window.EMBEDDED_DATA && window.EMBEDDED_DATA.parties) {
-                parties = [...window.EMBEDDED_DATA.parties];
-                partyCounter = window.EMBEDDED_DATA.partyCounter;
+                // 전역 변수에 명시적으로 할당
+                window.parties = [...window.EMBEDDED_DATA.parties];
+                window.partyCounter = window.EMBEDDED_DATA.partyCounter;
+                
+                // 기존 변수에도 할당
+                parties = window.parties;
+                partyCounter = window.partyCounter;
                 
                 console.log('loadData - EMBEDDED_DATA에서 로드:', parties.length, '개');
                 console.log('loadData - 첫 번째 파티:', parties[0]);
+                console.log('loadData - parties 배열 전체:', parties);
             } else {
                 console.error('EMBEDDED_DATA가 정의되지 않았습니다.');
                 return;
