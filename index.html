@@ -1549,13 +1549,13 @@
         let currentBoss = '';
         let filteredParties = null; // null = 필터 없음, 배열 = 필터 적용됨
             
-            // GitHub API 설정 (일시적으로 비활성화)
+            // GitHub API 설정 (완전 비활성화)
             let githubConfig = {
                 token: '',
                 owner: 'rlarhkd99-beep',
                 repo: 'Maple',
                 filePath: 'data/maple_party_data.json',
-                enabled: true // GitHub API 활성화
+                enabled: false // GitHub API 비활성화
             };
 
         // 보스별 색상 매핑
@@ -2861,6 +2861,9 @@
                         if (success) {
                             alert('✅ 모든 데이터가 저장되었습니다!\n\n🔗 GitHub와 동기화되었습니다.\n\n다른 사용자들이 새로고침하면 최신 데이터를 볼 수 있습니다.');
                             return;
+                        } else {
+                            alert('⚠️ GitHub 저장에 실패했습니다.\n\n로컬에만 저장되었습니다.\n\nGitHub API 설정을 확인해주세요.');
+                            return;
                         }
                     } catch (error) {
                         console.error('GitHub 저장 실패:', error);
@@ -2869,7 +2872,7 @@
                 }
                 
                 // GitHub API가 비활성화된 경우
-                alert('✅ 모든 데이터가 로컬에 저장되었습니다!');
+                alert('✅ 모든 데이터가 로컬에 저장되었습니다!\n\n💾 로컬 모드로 작동 중입니다.\n\n다른 기기에서는 데이터가 공유되지 않습니다.');
             }
             
             
@@ -3116,11 +3119,26 @@
                             console.log('첫 번째 파티의 캐릭터들:', jsonData.parties[0].characters);
                         }
                         
-                        // 인코딩 문제가 있는 경우 기본 데이터 사용
-                        if (!jsonData.parties || jsonData.parties.length === 0) {
-                            console.log('GitHub 데이터에 문제가 있어 기본 데이터를 사용합니다.');
+                        // 데이터 검증 및 기본값 설정
+                        if (!jsonData.parties || !Array.isArray(jsonData.parties) || jsonData.parties.length === 0) {
+                            console.log('GitHub 데이터에 유효한 parties가 없습니다. 기본 데이터를 사용합니다.');
                             return false;
                         }
+                        
+                        // 빈 객체나 잘못된 데이터 필터링
+                        const validParties = jsonData.parties.filter(party => 
+                            party && typeof party === 'object' && 
+                            (party.boss || party.characters || party.day || party.time || party.cleared || party.auctionPrice)
+                        );
+                        
+                        if (validParties.length === 0) {
+                            console.log('GitHub 데이터에 유효한 파티가 없습니다. 기본 데이터를 사용합니다.');
+                            return false;
+                        }
+                        
+                        // 유효한 데이터만 사용
+                        jsonData.parties = validParties;
+                        console.log(`유효한 파티 ${validParties.length}개를 로드했습니다.`);
                         
                         loadSharedData(jsonData);
                         return true;
@@ -3145,8 +3163,16 @@
                 try {
                     const currentHeaderData = getHeaderPlayerNames();
                     
+                    // 빈 파티 제거 (유효한 데이터만 저장)
+                    const validParties = parties.filter(party => 
+                        party && typeof party === 'object' && 
+                        (party.boss || party.characters || party.day || party.time || party.cleared || party.auctionPrice)
+                    );
+                    
+                    console.log(`저장할 유효한 파티 수: ${validParties.length}/${parties.length}`);
+                    
                     const shareData = {
-                        parties: parties,
+                        parties: validParties,
                         partyCounter: partyCounter,
                         headerData: currentHeaderData,
                         sortState: currentSort,
@@ -3177,36 +3203,81 @@
                             console.log('기존 파일 sha 가져오기 성공:', sha);
                         } else if (getResponse.status === 404) {
                             console.log('기존 파일이 없습니다. 새로 생성합니다.');
+                            sha = null; // 명시적으로 null 설정
                         } else {
-                            throw new Error(`파일 정보 가져오기 실패: ${getResponse.status}`);
+                            console.log(`파일 정보 가져오기 실패 (${getResponse.status}), 새로 생성합니다.`);
+                            sha = null; // 실패 시에도 null로 설정
                         }
                     } catch (error) {
                         console.log('파일 정보 가져오기 오류, 새로 생성합니다:', error);
+                        sha = null; // 오류 시에도 null로 설정
                     }
                     
-                    // 파일 업데이트/생성
-                    const updateResponse = await fetch(`https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${githubConfig.filePath}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${githubConfig.token}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `메이플 파티보스 데이터 업데이트 - ${new Date().toLocaleString()}`,
-                            content: encodedContent,
-                            sha: sha // null이면 새 파일 생성, 있으면 업데이트
-                        })
-                    });
+                    // 파일 업데이트/생성 (409 Conflict 재시도 로직 포함)
+                    let updateResponse;
+                    let retryCount = 0;
+                    const maxRetries = 3;
                     
-                    if (updateResponse.ok) {
-                        console.log('GitHub에 데이터가 성공적으로 저장되었습니다.');
-                        return true;
-                    } else {
-                        const errorText = await updateResponse.text();
-                        console.error('GitHub 저장 실패:', updateResponse.status, errorText);
-                        throw new Error(`HTTP ${updateResponse.status}: ${updateResponse.statusText}`);
+                    while (retryCount < maxRetries) {
+                        updateResponse = await fetch(`https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${githubConfig.filePath}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `token ${githubConfig.token}`,
+                                'Accept': 'application/vnd.github.v3+json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                message: `메이플 파티보스 데이터 업데이트 - ${new Date().toLocaleString()}`,
+                                content: encodedContent,
+                                sha: sha // null이면 새 파일 생성, 있으면 업데이트
+                            })
+                        });
+                        
+                        if (updateResponse.ok) {
+                            console.log('GitHub에 데이터가 성공적으로 저장되었습니다.');
+                            return true;
+                        } else if (updateResponse.status === 409) {
+                            // 409 Conflict 발생 시 최신 SHA 다시 가져오기
+                            console.log(`409 Conflict 발생 (시도 ${retryCount + 1}/${maxRetries}), 최신 SHA 다시 가져오기...`);
+                            
+                            try {
+                                const getResponse = await fetch(`https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/${githubConfig.filePath}`, {
+                                    headers: {
+                                        'Authorization': `token ${githubConfig.token}`,
+                                        'Accept': 'application/vnd.github.v3+json'
+                                    }
+                                });
+                                
+                                if (getResponse.ok) {
+                                    const fileData = await getResponse.json();
+                                    sha = fileData.sha;
+                                    console.log('최신 SHA 가져오기 성공:', sha);
+                                } else {
+                                    console.log('최신 SHA 가져오기 실패, 새로 생성합니다.');
+                                    sha = null;
+                                }
+                            } catch (error) {
+                                console.log('최신 SHA 가져오기 오류, 새로 생성합니다:', error);
+                                sha = null;
+                            }
+                            
+                            retryCount++;
+                            
+                            // 재시도 전 잠시 대기
+                            if (retryCount < maxRetries) {
+                                await new Promise(resolve => setTimeout(resolve, 1000));
+                            }
+                        } else {
+                            const errorText = await updateResponse.text();
+                            console.error('GitHub 저장 실패:', updateResponse.status, errorText);
+                            throw new Error(`HTTP ${updateResponse.status}: ${updateResponse.statusText}`);
+                        }
                     }
+                    
+                    // 최대 재시도 횟수 초과
+                    const errorText = await updateResponse.text();
+                    console.error('GitHub 저장 실패 (최대 재시도 횟수 초과):', updateResponse.status, errorText);
+                    throw new Error(`HTTP ${updateResponse.status}: 최대 재시도 횟수 초과`);
                 } catch (error) {
                     console.error('GitHub 데이터 저장 오류:', error);
                     return false;
