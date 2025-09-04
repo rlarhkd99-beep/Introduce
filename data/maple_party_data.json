@@ -310,7 +310,7 @@
         "",
         ""
       ],
-      "boss": "",
+      "boss": "aaaa",
       "day": "",
       "time": "",
       "cleared": false,
@@ -335,5 +335,5 @@
     "currentBoss": "",
     "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T08:20:29.928Z"
+  "lastUpdated": "2025-09-04T08:20:35.371Z"
 }
