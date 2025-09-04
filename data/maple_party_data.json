@@ -283,7 +283,7 @@
       "boss": "이지 칼로스",
       "time": "",
       "cleared": false,
-      "auctionPrice": 0
+      "auctionPrice": 222222
     },
     {
       "id": 20,
@@ -319,5 +319,5 @@
     "currentBoss": "",
     "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T08:20:16.233Z"
+  "lastUpdated": "2025-09-04T08:20:24.070Z"
 }
