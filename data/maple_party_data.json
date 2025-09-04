@@ -283,23 +283,7 @@
       "boss": "이지 대적자",
       "time": "",
       "cleared": false,
-      "auctionPrice": 0
-    },
-    {
-      "id": 20,
-      "characters": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "boss": "",
-      "day": "",
-      "time": "",
-      "cleared": false,
-      "auctionPrice": 0
+      "auctionPrice": 5555
     }
   ],
   "partyCounter": 21,
@@ -320,5 +304,5 @@
     "currentBoss": "",
     "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T07:09:27.407Z"
+  "lastUpdated": "2025-09-04T07:47:24.430Z"
 }
