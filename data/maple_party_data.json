@@ -302,29 +302,9 @@
     "direction": "asc"
   },
   "filterState": {
-    "currentPlayer": "광민",
+    "currentPlayer": "",
     "currentBoss": "",
-    "filteredParties": [
-      1,
-      2,
-      3,
-      5,
-      7,
-      8,
-      4,
-      6,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19
-    ]
+    "filteredParties": null
   },
-  "lastUpdated": "2025-09-04T02:07:19.656Z"
+  "lastUpdated": "2025-09-04T02:13:49.357Z"
 }
